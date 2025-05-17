@@ -44,6 +44,32 @@ class EmbeddingProviderSettings(BaseSettings):
         default="sentence-transformers/all-MiniLM-L6-v2",
         validation_alias="EMBEDDING_MODEL",
     )
+    
+    # Common settings
+    vector_size: Optional[int] = Field(
+        default=None, 
+        validation_alias="EMBEDDING_VECTOR_SIZE",
+    )
+    
+    # GGUF-specific settings
+    max_context_length: int = Field(
+        default=2048,
+        validation_alias="EMBEDDING_MAX_CONTEXT_LENGTH",
+    )
+    llama_cpp_path: Optional[str] = Field(
+        default=None,
+        validation_alias="LLAMA_CPP_PATH",
+    )
+    
+    # LM Studio-specific settings
+    lmstudio_api_base: str = Field(
+        default="http://localhost:1234/v1",
+        validation_alias="LMSTUDIO_API_BASE",
+    )
+    lmstudio_api_key: str = Field(
+        default="lm-studio",
+        validation_alias="LMSTUDIO_API_KEY",
+    )
 
 
 class QdrantSettings(BaseSettings):
