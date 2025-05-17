@@ -2,31 +2,33 @@ import numpy as np
 import pytest
 from unittest.mock import patch, AsyncMock
 
-from mcp_server_qdrant.embeddings.lmstudio import LMStudioProvider
-from mcp_server_qdrant.settings import Settings
+from mcp_server_qdrant.embeddings.lmstudio import LMStudioEmbeddingProvider
+from mcp_server_qdrant.settings import EmbeddingProviderSettings
 
 
 @pytest.mark.asyncio
 class TestLMStudioProviderIntegration:
-    """Integration tests for LMStudioProvider."""
+    """Integration tests for LMStudioEmbeddingProvider."""
 
     @pytest.fixture
     def mock_settings(self):
-        settings = Settings(
-            embedding_provider="lmstudio",
-            embedding_model="nomic-embed-text-v1.5",
+        settings = EmbeddingProviderSettings(
+            provider_type="lmstudio",
+            model_name="nomic-embed-text-v1.5",
             vector_size=768,
-            lmstudio_api_base="http://localhost:1234/v1",
+            lmstudio_api_base="http://localhost:11433/v1",
         )
         return settings
 
     @pytest.fixture
     def mock_response(self):
-        """Mock response for httpx client."""
-        with patch("mcp_server_qdrant.embeddings.lmstudio.httpx.AsyncClient") as mock_client:
+        """Mock response for aiohttp client."""
+        with patch("mcp_server_qdrant.embeddings.lmstudio.aiohttp.ClientSession") as mock_client:
             client_instance = AsyncMock()
-            mock_post = AsyncMock()
-            mock_post.json.return_value = {
+            context_manager = AsyncMock()
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json.return_value = {
                 "data": [
                     {"embedding": [0.01, 0.02, 0.03, 0.04]},
                     {"embedding": [0.05, 0.06, 0.07, 0.08]}
@@ -35,26 +37,27 @@ class TestLMStudioProviderIntegration:
                 "object": "list",
                 "usage": {"prompt_tokens": 15, "total_tokens": 15}
             }
-            mock_post.status_code = 200
-            client_instance.post = AsyncMock(return_value=mock_post)
-            mock_client.return_value.__aenter__.return_value = client_instance
+            
+            context_manager.__aenter__.return_value = mock_response
+            client_instance.post.return_value = context_manager
+            mock_client.return_value = client_instance
             yield mock_client
 
     async def test_initialization(self, mock_settings):
         """Test that the provider can be initialized with a valid model."""
-        provider = LMStudioProvider(
-            mock_settings.embedding_model,
+        provider = LMStudioEmbeddingProvider(
+            model_name=mock_settings.model_name,
             api_base=mock_settings.lmstudio_api_base,
             vector_size=mock_settings.vector_size
         )
-        assert provider.model_name == mock_settings.embedding_model
+        assert provider.model_name == mock_settings.model_name
         assert provider.api_base == mock_settings.lmstudio_api_base
-        assert provider.vector_size == mock_settings.vector_size
+        assert provider._vector_size == mock_settings.vector_size
 
     async def test_embed_documents(self, mock_settings, mock_response):
         """Test that documents can be embedded."""
-        provider = LMStudioProvider(
-            mock_settings.embedding_model,
+        provider = LMStudioEmbeddingProvider(
+            model_name=mock_settings.model_name,
             api_base=mock_settings.lmstudio_api_base,
             vector_size=mock_settings.vector_size
         )
@@ -76,8 +79,8 @@ class TestLMStudioProviderIntegration:
 
     async def test_embed_query(self, mock_settings, mock_response):
         """Test that queries can be embedded."""
-        provider = LMStudioProvider(
-            mock_settings.embedding_model,
+        provider = LMStudioEmbeddingProvider(
+            model_name=mock_settings.model_name,
             api_base=mock_settings.lmstudio_api_base,
             vector_size=mock_settings.vector_size
         )
@@ -90,8 +93,8 @@ class TestLMStudioProviderIntegration:
 
     async def test_get_vector_name(self, mock_settings):
         """Test that the vector name is generated correctly."""
-        provider = LMStudioProvider(
-            "nomic-embed-text-v1.5",
+        provider = LMStudioEmbeddingProvider(
+            model_name="nomic-embed-text-v1.5",
             api_base=mock_settings.lmstudio_api_base,
             vector_size=mock_settings.vector_size
         )

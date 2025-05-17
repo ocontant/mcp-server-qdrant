@@ -63,12 +63,26 @@ class EmbeddingProviderSettings(BaseSettings):
     
     # LM Studio-specific settings
     lmstudio_api_base: str = Field(
-        default="http://localhost:1234/v1",
+        default="http://localhost:11433/v1",
         validation_alias="LMSTUDIO_API_BASE",
     )
     lmstudio_api_key: str = Field(
         default="lm-studio",
         validation_alias="LMSTUDIO_API_KEY",
+    )
+    
+    # IBM Granite-specific settings
+    granite_device: str = Field(
+        default="cpu",
+        validation_alias="GRANITE_DEVICE",
+    )
+    granite_normalize_embeddings: bool = Field(
+        default=True,
+        validation_alias="GRANITE_NORMALIZE_EMBEDDINGS",
+    )
+    granite_max_length: int = Field(
+        default=512,
+        validation_alias="GRANITE_MAX_LENGTH",
     )
 
 

@@ -3,19 +3,19 @@ import pytest
 import os
 from unittest.mock import patch, AsyncMock
 
-from mcp_server_qdrant.embeddings.gguf import GGUFProvider
-from mcp_server_qdrant.settings import Settings
+from mcp_server_qdrant.embeddings.gguf import GGUFEmbeddingProvider
+from mcp_server_qdrant.settings import EmbeddingProviderSettings
 
 
 @pytest.mark.asyncio
 class TestGGUFProviderIntegration:
-    """Integration tests for GGUFProvider."""
+    """Integration tests for GGUFEmbeddingProvider."""
 
     @pytest.fixture
     def mock_settings(self):
-        settings = Settings(
-            embedding_provider="gguf",
-            embedding_model_path="/path/to/model.gguf",
+        settings = EmbeddingProviderSettings(
+            provider_type="gguf",
+            model_name="/path/to/model.gguf",
             vector_size=384,
             max_context_length=2048,
         )
@@ -36,19 +36,19 @@ class TestGGUFProviderIntegration:
 
     async def test_initialization(self, mock_settings):
         """Test that the provider can be initialized with a valid model."""
-        provider = GGUFProvider(
-            mock_settings.embedding_model_path, 
+        provider = GGUFEmbeddingProvider(
+            model_path=mock_settings.model_name, 
             vector_size=mock_settings.vector_size,
             max_context_length=mock_settings.max_context_length
         )
-        assert provider.model_path == mock_settings.embedding_model_path
+        assert provider.model_path == mock_settings.model_name
         assert provider.vector_size == mock_settings.vector_size
         assert provider.max_context_length == mock_settings.max_context_length
 
     async def test_embed_documents(self, mock_settings, mock_process):
         """Test that documents can be embedded."""
-        provider = GGUFProvider(
-            mock_settings.embedding_model_path, 
+        provider = GGUFEmbeddingProvider(
+            model_path=mock_settings.model_name, 
             vector_size=mock_settings.vector_size,
             max_context_length=mock_settings.max_context_length
         )
@@ -70,8 +70,8 @@ class TestGGUFProviderIntegration:
 
     async def test_embed_query(self, mock_settings, mock_process):
         """Test that queries can be embedded."""
-        provider = GGUFProvider(
-            mock_settings.embedding_model_path, 
+        provider = GGUFEmbeddingProvider(
+            model_path=mock_settings.model_name, 
             vector_size=mock_settings.vector_size,
             max_context_length=mock_settings.max_context_length
         )
@@ -84,8 +84,8 @@ class TestGGUFProviderIntegration:
 
     async def test_get_vector_name(self, mock_settings):
         """Test that the vector name is generated correctly."""
-        provider = GGUFProvider(
-            "/path/to/nomic-embed-text-v1.5.f16.gguf", 
+        provider = GGUFEmbeddingProvider(
+            model_path="/path/to/nomic-embed-text-v1.5.f16.gguf", 
             vector_size=mock_settings.vector_size,
             max_context_length=mock_settings.max_context_length
         )
