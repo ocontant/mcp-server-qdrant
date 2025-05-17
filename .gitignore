@@ -163,3 +163,8 @@ cython_debug/
 
 # Project-specific settings
 .aider*
+
+# Fork management documentation
+FORK_MANAGEMENT.md
+FORK_FEATURES.md
+UPGRADING.md
