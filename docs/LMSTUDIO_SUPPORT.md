@@ -27,7 +27,7 @@ To use LM Studio for embedding generation, you need:
 
 3. **Start the Server**:
    - Click the "Start Server" button
-   - Note the URL and port (default is `http://localhost:1234`)
+   - Note the URL and port (default is `http://localhost:11433`)
 
 ## Configuration for Qdrant MCP Server
 
@@ -38,7 +38,7 @@ To use LM Studio for embeddings, set the following environment variables:
 | `EMBEDDING_PROVIDER`      | Set to "lmstudio" to use LM Studio           | `lmstudio`                                |
 | `EMBEDDING_MODEL`         | Model name loaded in LM Studio               | `nomic-ai/nomic-embed-text-v1.5`           |
 | `EMBEDDING_VECTOR_SIZE`   | Size of embedding vectors (optional)         | `1024` (for nomic-embed-text-v1.5)         |
-| `LMSTUDIO_API_BASE`       | Base URL of the LM Studio API                | `http://localhost:1234/v1`                 |
+| `LMSTUDIO_API_BASE`       | Base URL of the LM Studio API                | `http://localhost:11433/v1`                |
 | `LMSTUDIO_API_KEY`        | API key for authentication (usually optional)| `lm-studio`                               |
 
 ### Vector Size Reference
@@ -62,7 +62,7 @@ QDRANT_URL="http://localhost:6333" \
 COLLECTION_NAME="code-memory" \
 EMBEDDING_PROVIDER="lmstudio" \
 EMBEDDING_MODEL="nomic-ai/nomic-embed-text-v1.5" \
-LMSTUDIO_API_BASE="http://localhost:1234/v1" \
+LMSTUDIO_API_BASE="http://localhost:11433/v1" \
 uvx mcp-server-qdrant
 ```
 
@@ -74,7 +74,7 @@ COLLECTION_NAME="code-memory" \
 EMBEDDING_PROVIDER="lmstudio" \
 EMBEDDING_MODEL="Snowflake/snowflake-arctic-embed-l-v2.0" \
 EMBEDDING_VECTOR_SIZE=768 \
-LMSTUDIO_API_BASE="http://localhost:1234/v1" \
+LMSTUDIO_API_BASE="http://localhost:11433/v1" \
 uvx mcp-server-qdrant
 ```
 
@@ -102,7 +102,7 @@ claude mcp add qdrant-lmstudio \
   -e COLLECTION_NAME="code-memory" \
   -e EMBEDDING_PROVIDER="lmstudio" \
   -e EMBEDDING_MODEL="nomic-ai/nomic-embed-text-v1.5" \
-  -e LMSTUDIO_API_BASE="http://localhost:1234/v1" \
+  -e LMSTUDIO_API_BASE="http://localhost:11433/v1" \
   -- uvx mcp-server-qdrant
 ```
 
@@ -119,7 +119,7 @@ services:
       - COLLECTION_NAME=code-memory
       - EMBEDDING_PROVIDER=lmstudio
       - EMBEDDING_MODEL=nomic-ai/nomic-embed-text-v1.5
-      - LMSTUDIO_API_BASE=http://host.docker.internal:1234/v1
+      - LMSTUDIO_API_BASE=http://host.docker.internal:11433/v1
     # ... other configuration ...
 ```
 
@@ -137,7 +137,7 @@ services:
 3. **API Errors**: Verify that the embedding endpoint is available
    - Try a simple test with curl:
      ```bash
-     curl -X POST http://localhost:1234/v1/embeddings \
+     curl -X POST http://localhost:11433/v1/embeddings \
        -H "Content-Type: application/json" \
        -d '{"model":"your-model-name","input":"test"}'
      ```
