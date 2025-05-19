@@ -1,3 +1,8 @@
+# Github Docs\
+FORK_FEATURES.md
+FORK_MANAGEMENT.md
+UPGRADING.md
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
